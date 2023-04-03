@@ -15,3 +15,9 @@ Decision Trees hyperparameters
 '''
 Naive Bayes hyperparameters
 '''
+
+
+'''
+KNN hyperparameters
+'''
+numNeighbours = 10
