@@ -15,3 +15,16 @@ optimalHyperparameters = {
     "max_depth": 10,
     "class_weight": "balanced_subsample"
 }
+
+
+
+#values for computing expected profit
+sendingCost = -10
+highIncomeProfit = 980
+lowIncomeProfit = -310
+
+highIncomeAcceptance = 0.1
+lowIncomeAcceptance = 0.05
+
+
+rowIDsFile = "rowIDs.txt"

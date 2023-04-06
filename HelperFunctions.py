@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import settings
+from settings import *
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 
@@ -8,7 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 def preprocess(data, oneHot=False, labelled=True):
     #removing redundant columns
-    newData = data.drop(labels=settings.redundantFeatures, axis=1)
+    newData = data.drop(labels=redundantFeatures, axis=1)
 
     if labelled:
         #making labels numerical - 1 for >50K, 0 for <=50K or unknown
@@ -16,7 +16,7 @@ def preprocess(data, oneHot=False, labelled=True):
 
     if oneHot:
         #converting dataframe to one-hot representation with one column for each possible value of each categorical attribute
-        newData = pd.get_dummies(newData, columns=settings.categoricalFeatures)
+        newData = pd.get_dummies(newData, columns=categoricalFeatures)
         
     return newData
 
@@ -33,7 +33,7 @@ def preprocessNB(data, labelled=True):
     processed = preprocess(data, labelled=labelled)
 
     #encoding categorical features
-    processed[settings.categoricalFeatures] = processed[settings.categoricalFeatures].apply(LabelEncoder().fit_transform)
+    processed[categoricalFeatures] = processed[categoricalFeatures].apply(LabelEncoder().fit_transform)
     
     return processed
 
@@ -42,10 +42,10 @@ def preprocessKNN(data, labelled=True):
     processed = preprocess(data, oneHot=True, labelled=labelled)
 
     #normalising categorical attributes
-    oneHotCategorical = list(set(processed.columns.values.tolist()) - set(settings.numericalFeatures))    #getting list of one-hot encoded categorical column names
+    oneHotCategorical = list(set(processed.columns.values.tolist()) - set(numericalFeatures))    #getting list of one-hot encoded categorical column names
     if labelled:
         oneHotCategorical.remove("class")
-    weight = 0.5 * len(settings.numericalFeatures)/len(settings.categoricalFeatures)
+    weight = 0.5 * len(numericalFeatures)/len(categoricalFeatures)
 
     processed[oneHotCategorical] = processed[oneHotCategorical].apply(lambda x: x*weight)
     #processed.head()
@@ -63,11 +63,11 @@ def scaleNumericalFeatures(data, scaler=None):
     if scaler == None:
         #normalising numerical attributes
         scaler = MinMaxScaler()
-        scaler.fit(data[settings.numericalFeatures])
+        scaler.fit(data[numericalFeatures])
         #print(scaler.data_max_)
 
     d = data.copy()
-    d[settings.numericalFeatures] = scaler.transform(d[settings.numericalFeatures])
+    d[numericalFeatures] = scaler.transform(d[numericalFeatures])
     #data.head()
 
     return d, scaler
@@ -95,3 +95,7 @@ def customScorer(truths, preds):
 
     return score
     
+
+
+def computeExpectedProfit(prob):
+    return (prob*highIncomeAcceptance*highIncomeProfit) + ((1-prob)*lowIncomeAcceptance*lowIncomeProfit) + sendingCost
