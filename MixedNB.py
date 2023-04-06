@@ -55,10 +55,8 @@ class MixedNB(BaseEstimator, ClassifierMixin):
 
 
     def set_params(self, **params):
+        self.alpha = params["alpha"]    #janky workaround as the aplha parameter is the only one we really care about (will raise an exception if alpha parameter not passed in params argument)
+        
         self.categoricalModel.set_params(**params)
         return self
-
-
-    #only attribute to change, so always returns alpha
-    #def get_params(self):
-    #    return {"alpha": self.alpha}
+        

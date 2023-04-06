@@ -12,6 +12,8 @@ from sklearn.utils.multiclass import unique_labels
 
 class MyKNN(BaseEstimator, ClassifierMixin):
 
+    n_neighbors=5
+    weights="uniform"
     #gaussian model's parameters are fixed as the defaults.
     def __init__(self, n_neighbors=5, weights="uniform"):
         self.model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights)
@@ -25,8 +27,8 @@ class MyKNN(BaseEstimator, ClassifierMixin):
         self.X_, self.scaler = scaleNumericalFeatures(X)
         self.Y_ = Y
 
-        self.model.fit(self.X_[settings.categoricalFeatures], self.Y_)
-
+        self.model.fit(self.X_, self.Y_)
+            
         return self
     
     def predict_proba(self, X):
@@ -42,9 +44,19 @@ class MyKNN(BaseEstimator, ClassifierMixin):
 
         check_is_fitted(self)
 
-        X = check_array(X)
+        #X = check_array(X)
 
         probs = self.predict_proba(X)
 
         return np.argmax(probs, axis=1)     #returns index of largest probability (as labels are 0 and 1, indexes match labels)
 
+
+
+    def set_params(self, **params):
+        if "n_neighbours" in params:            #janky workaround
+            self.n_neighbours = params["n_neighbours"]
+        if "weights" in params:
+            self.weights = params["weights"]
+        
+        self.model.set_params(**params)
+        return self
