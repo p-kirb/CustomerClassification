@@ -7,17 +7,11 @@ numericalFeatures = ['age', 'education-num', 'capital-gain', 'capital-loss', 'ho
 
 
 
-'''
-Decision Trees hyperparameters
-'''
-
-
-'''
-Naive Bayes hyperparameters
-'''
-
-
-'''
-KNN hyperparameters
-'''
-numNeighbours = 10
+#found from cross-validated grid search
+optimalHyperparameters = {
+    "n_estimators": 90,
+    "min_samples_split": 7,
+    "max_features": None,
+    "max_depth": 10,
+    "class_weight": "balanced_subsample"
+}

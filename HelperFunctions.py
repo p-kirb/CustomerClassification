@@ -6,12 +6,13 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 
-def preprocess(data, oneHot=False):
+def preprocess(data, oneHot=False, labelled=True):
     #removing redundant columns
     newData = data.drop(labels=settings.redundantFeatures, axis=1)
 
-    #making labels numerical - 1 for >50K, 0 for <=50K or unknown
-    newData["class"] = newData["class"].map(lambda x: 1 if(x == ">50K") else 0)
+    if labelled:
+        #making labels numerical - 1 for >50K, 0 for <=50K or unknown
+        newData["class"] = newData["class"].map(lambda x: 1 if(x == ">50K") else 0)
 
     if oneHot:
         #converting dataframe to one-hot representation with one column for each possible value of each categorical attribute
@@ -22,14 +23,14 @@ def preprocess(data, oneHot=False):
 
 
 
-def preprocessDT(data):
-    return preprocess(data, oneHot=True)
+def preprocessDT(data, labelled=True):
+    return preprocess(data, oneHot=True, labelled=labelled)
 
 
 
 
-def preprocessNB(data):
-    processed = preprocess(data)
+def preprocessNB(data, labelled=True):
+    processed = preprocess(data, labelled=labelled)
 
     #encoding categorical features
     processed[settings.categoricalFeatures] = processed[settings.categoricalFeatures].apply(LabelEncoder().fit_transform)
@@ -37,12 +38,13 @@ def preprocessNB(data):
     return processed
 
 
-def preprocessKNN(data):
-    processed = preprocess(data, oneHot=True)
+def preprocessKNN(data, labelled=True):
+    processed = preprocess(data, oneHot=True, labelled=labelled)
 
     #normalising categorical attributes
     oneHotCategorical = list(set(processed.columns.values.tolist()) - set(settings.numericalFeatures))    #getting list of one-hot encoded categorical column names
-    oneHotCategorical.remove("class")
+    if labelled:
+        oneHotCategorical.remove("class")
     weight = 0.5 * len(settings.numericalFeatures)/len(settings.categoricalFeatures)
 
     processed[oneHotCategorical] = processed[oneHotCategorical].apply(lambda x: x*weight)
